@@ -9,7 +9,7 @@ public class Family {
     private Human[] children;
     private Pet pet;
 
-    // Constructor: Must have two parents
+
     public Family(Human mother, Human father) {
         this.mother = mother;
         this.father = father;
@@ -18,7 +18,7 @@ public class Family {
         this.father.setFamily(this);
     }
 
-    // Getters and Setters
+
     public Human getMother() {
         return mother;
     }
