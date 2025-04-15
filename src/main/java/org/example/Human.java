@@ -27,7 +27,7 @@ public class Human {
 
     public Human() {}
 
-    // Feed, greet and describe the family pet
+
     public void greetPet() {
         if (family != null && family.getPet() != null)
             System.out.println("Hello, " + family.getPet().getNickname());
@@ -55,7 +55,7 @@ public class Human {
         }
     }
 
-    // Getters and Setters
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
