@@ -1,148 +1,78 @@
 package org.example;
 
 import java.util.Arrays;
-import java.util.Random;
+import java.util.Objects;
 
-public class Human{
+public class Human {
     private String name;
     private String surname;
     private int year;
     private int iq;
-    private Pet pet;
-    private Human mother;
-    private Human father;
     private String[][] schedule;
+    private Family family;
 
-    public Human(String name, String surname, int year, int iq, Pet pet, Human mother, Human father, String[][] schedule) {
+    public Human(String name, String surname, int year, int iq, String[][] schedule) {
         this.name = name;
         this.surname = surname;
         this.year = year;
         this.iq = iq;
-        this.pet = pet;
-        this.mother = mother;
-        this.father = father;
         this.schedule = schedule;
     }
 
-    public Human(String name, String surname, int year, Human mother, Human father) {
+    public Human(String name, String surname, int year) {
         this.name = name;
         this.surname = surname;
         this.year = year;
-        this.mother = mother;
-        this.father = father;
     }
 
-    public Human(String name, String surname, int year, int iq, Pet pet) {
-        this.name = name;
-        this.surname = surname;
-        this.year = year;
-        this.iq = iq;
-        this.pet = pet;
+    public Human() {}
+
+    // Feed, greet and describe the family pet
+    public void greetPet() {
+        if (family != null && family.getPet() != null)
+            System.out.println("Hello, " + family.getPet().getNickname());
     }
 
-    public Human(){}
-
-    public void greetPet(){
-        System.out.println("Hello, " + pet.getNickname());
-    }
-
-    public void describePet(){
-        String sly;
-        if(pet.getTrickLevel() > 50){
-            sly = "very sly";
-        }
-        else{
-            sly = "almost not sly";
-        }
-        if(pet.getTrickLevel() != 0 && pet.getAge() != 0){
-            System.out.printf("I have an %s which is %d years old, he is %s.\n", pet.getSpecies(), pet.getAge(), sly);
-        }
-        else{
-            System.out.println("I have an " + pet.getSpecies());
+    public void describePet() {
+        if (family != null && family.getPet() != null) {
+            Pet pet = family.getPet();
+            String sly = pet.getTrickLevel() > 50 ? "very sly" : "almost not sly";
+            System.out.printf("I have a %s who is %d years old, and he is %s.\n", pet.getSpecies(), pet.getAge(), sly);
         }
     }
 
-    public boolean feedPet(boolean isTime){
-        int rand;
-        {
-            Random random = new Random();
-            rand = random.nextInt(100) + 1;
-        }
-        if(isTime){
+    public boolean feedPet(boolean isTime) {
+        if (family == null || family.getPet() == null) return false;
+
+        Pet pet = family.getPet();
+        int chance = (int) (Math.random() * 100);
+        if (isTime || pet.getTrickLevel() > chance) {
             System.out.printf("%s feeds the pet.\n", this.name);
+            return true;
+        } else {
+            System.out.printf("I think %s is not hungry.\n", pet.getNickname());
+            return false;
         }
-        else if(pet.getTrickLevel() > rand){
-            System.out.printf("I think %s is not hungry", pet.getNickname());
-        }
-        else{
-            System.out.printf("%s feeds the pet.\n", this.name);
-        }
-        return isTime;
     }
 
-    public String getName() {
-        return name;
-    }
+    // Getters and Setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getSurname() { return surname; }
+    public void setSurname(String surname) { this.surname = surname; }
 
-    public String getSurname() {
-        return surname;
-    }
+    public int getYear() { return year; }
+    public void setYear(int year) { this.year = year; }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
+    public int getIq() { return iq; }
+    public void setIq(int iq) { this.iq = iq; }
 
-    public int getYear() {
-        return year;
-    }
+    public String[][] getSchedule() { return schedule; }
+    public void setSchedule(String[][] schedule) { this.schedule = schedule; }
 
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public int getIq() {
-        return iq;
-    }
-
-    public void setIq(int iq) {
-        this.iq = iq;
-    }
-
-    public Pet getPet() {
-        return pet;
-    }
-
-    public void setPet(Pet pet) {
-        this.pet = pet;
-    }
-
-    public Human getMother() {
-        return mother;
-    }
-
-    public void setMother(Human mother) {
-        this.mother = mother;
-    }
-
-    public Human getFather() {
-        return father;
-    }
-
-    public void setFather(Human father) {
-        this.father = father;
-    }
-
-    public String[][] getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(String[][] schedule) {
-        this.schedule = schedule;
-    }
+    public Family getFamily() { return family; }
+    public void setFamily(Family family) { this.family = family; }
 
     @Override
     public String toString() {
@@ -151,10 +81,30 @@ public class Human{
                 ", surname='" + surname + '\'' +
                 ", year=" + year +
                 ", iq=" + iq +
-                ", pet=" + pet +
-                ", mother=" + mother +
-                ", father=" + father +
-                ", schedule=" + Arrays.toString(schedule) +
+                ", schedule=" + Arrays.deepToString(schedule) +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Human)) return false;
+        Human human = (Human) o;
+        return year == human.year &&
+                Objects.equals(name, human.name) &&
+                Objects.equals(surname, human.surname);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, surname, year);
+    }
+
+    {
+        System.out.println("New Human object created.");
+    }
+
+    static {
+        System.out.println("Human class loaded.");
     }
 }
