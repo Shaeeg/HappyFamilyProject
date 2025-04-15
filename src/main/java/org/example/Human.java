@@ -107,4 +107,9 @@ public class Human {
     static {
         System.out.println("Human class loaded.");
     }
+
+    @Override
+    protected void finalize(){
+        System.out.println("Human object destroyed.");
+    }
 }

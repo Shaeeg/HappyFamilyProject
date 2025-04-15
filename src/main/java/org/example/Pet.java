@@ -1,15 +1,16 @@
 package org.example;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Pet {
-    private String species;
+    private Species species;
     private String nickname;
     private int age;
     private int trickLevel;
     private String[] habits;
 
-    public Pet(String species, String nickname, int age, int trickLevel, String[] habits) {
+    public Pet(Species species, String nickname, int age, int trickLevel, String[] habits) {
         this.species = species;
         this.nickname = nickname;
         this.age = age;
@@ -17,7 +18,7 @@ public class Pet {
         this.habits = habits;
     }
 
-    public Pet(String species, String nickname) {
+    public Pet(Species species, String nickname) {
         this.species = species;
         this.nickname = nickname;
     }
@@ -37,10 +38,10 @@ public class Pet {
     }
 
     public String getSpecies() {
-        return species;
+        return species.toString();
     }
 
-    public void setSpecies(String species) {
+    public void setSpecies(Species species) {
         this.species = species;
     }
 
@@ -77,6 +78,19 @@ public class Pet {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Pet pet = (Pet) o;
+        return age == pet.age && trickLevel == pet.trickLevel && Objects.equals(species, pet.species) && Objects.equals(nickname, pet.nickname) && Objects.deepEquals(habits, pet.habits);
+    }
+
+    @Override
+    public int hashCode() {
+        int speciesHash = Objects.hash(species.canFly(), species.numberOfLegs(), species.hasFur());
+        return Objects.hash(speciesHash, nickname, age, trickLevel, Arrays.hashCode(habits));
+    }
+
+    @Override
     public String toString() {
         return species +
                 "{nickname='" + nickname + '\'' +
@@ -84,5 +98,10 @@ public class Pet {
                 ", trickLevel=" + trickLevel +
                 ", habits=" + Arrays.toString(habits) +
                 '}';
+    }
+
+    @Override
+    protected void finalize(){
+        System.out.println("Pet object destroyed.");
     }
 }

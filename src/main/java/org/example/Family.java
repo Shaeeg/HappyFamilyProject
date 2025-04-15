@@ -13,7 +13,7 @@ public class Family {
     public Family(Human mother, Human father) {
         this.mother = mother;
         this.father = father;
-        this.children = new Human[0]; // empty initially
+        this.children = new Human[0];
         this.mother.setFamily(this);
         this.father.setFamily(this);
     }
@@ -58,24 +58,37 @@ public class Family {
         child.setFamily(this);
     }
 
-    public boolean deleteChild(int index) {
-        if (index < 0 || index >= children.length) return false;
+    public boolean deleteChild(Human child) {
+        if (children == null || children.length == 0) return false;
 
-        Human[] newChildren = new Human[children.length - 1];
-        for (int i = 0, j = 0; i < children.length; i++) {
-            if (i != index) {
-                newChildren[j++] = children[i];
-            } else {
-                children[i].setFamily(null);
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].equals(child)) {
+                for (int j = i; j < children.length - 1; j++) {
+                    children[j] = children[j + 1];
+                }
+                children = Arrays.copyOf(children, children.length - 1);
+                return true;
             }
         }
-        this.children = newChildren;
+        return false;
+    }
+
+    public boolean deleteChild(int index) {
+        if (children == null || index < 0 || index >= children.length) return false;
+
+        for (int i = index; i < children.length - 1; i++) {
+            children[i] = children[i + 1];
+        }
+        children = Arrays.copyOf(children, children.length - 1);
         return true;
     }
 
     public int countFamily() {
-        return 2 + children.length + (pet != null ? 1 : 0);
+        int total = 2 + children.length;
+        if (pet != null) total++;
+        return total;
     }
+
 
     @Override
     public String toString() {
@@ -108,5 +121,10 @@ public class Family {
 
     {
         System.out.println("New Family object created.");
+    }
+
+    @Override
+    protected void finalize() {
+        System.out.println("Family object destroyed.");
     }
 }
