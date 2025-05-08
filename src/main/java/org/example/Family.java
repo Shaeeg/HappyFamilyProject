@@ -1,14 +1,12 @@
 package org.example;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class Family implements HumanCreator {
     private Human mother;
     private Human father;
-    private Human[] children;
-    private Pet pet;
+    private List<Human> children;
+    private Set<Pet> pets;
     private static final String[] MALE_NAMES = {"Ali", "Shaiq", "Omar", "Nihad"};
     private static final String[] FEMALE_NAMES = {"Nuray", "Nigar", "Zeyneb", "Zehra"};
 
@@ -16,9 +14,17 @@ public class Family implements HumanCreator {
     public Family(Human mother, Human father) {
         this.mother = mother;
         this.father = father;
-        this.children = new Human[0];
+        this.children = new ArrayList<>();
+        this.pets = new HashSet<>();
         this.mother.setFamily(this);
         this.father.setFamily(this);
+
+        if (mother.getPet() != null) {
+            children.forEach(mother::assignPetToChild);
+        }
+        if (father.getPet() != null) {
+            children.forEach(father::assignPetToChild);
+        }
     }
 
 
@@ -38,84 +44,86 @@ public class Family implements HumanCreator {
         this.father = father;
     }
 
-    public Human[] getChildren() {
+    public List<Human> getChildren() {
         return children;
     }
 
-    public void setChildren(Human[] children) {
+    public void setChildren(List<Human> children) {
         this.children = children;
     }
 
-    public Pet getPet() {
-        return pet;
+    public Set<Pet> getPets() {
+        return pets;
     }
 
-    public void setPet(Pet pet) {
-        this.pet = pet;
+    public void setPets(Set<Pet> pets) {
+        this.pets = pets;
     }
 
     public void addChild(Human child) {
-        Human[] newChildren = Arrays.copyOf(children, children.length + 1);
-        newChildren[children.length] = child;
-        this.children = newChildren;
+        children.add(child);
         child.setFamily(this);
+
+        if(child.getYear() == 0){
+            child.setYear(mother.getYear() + 1);
+        }
     }
 
     public boolean deleteChild(Human child) {
-        if (children == null || children.length == 0) return false;
-
-        for (int i = 0; i < children.length; i++) {
-            if (children[i].equals(child)) {
-                for (int j = i; j < children.length - 1; j++) {
-                    children[j] = children[j + 1];
-                }
-                children = Arrays.copyOf(children, children.length - 1);
-                return true;
-            }
-        }
-        return false;
+        if (children == null || children.isEmpty()) return false;
+        boolean removed = children.remove(child);
+        if (removed) child.setFamily(null);
+        return removed;
     }
 
-    public boolean deleteChild(int index) {
-        if (children == null || index < 0 || index >= children.length) return false;
 
-        for (int i = index; i < children.length - 1; i++) {
-            children[i] = children[i + 1];
-        }
-        children = Arrays.copyOf(children, children.length - 1);
+    public boolean deleteChild(int index) {
+        if (children == null || index < 0 || index >= children.size()) return false;
+
+        children.remove(index);
         return true;
     }
 
     public int countFamily() {
-        int total = 2 + children.length;
-        if (pet != null) total++;
+        int total = 2 + children.size();
+        if (pets != null) total = total + pets.size();
         return total;
     }
 
     public Human bornChild(Man father, Woman mother) {
-
         Random rand = new Random();
         String gender = rand.nextBoolean() ? "male" : "female";
         int iq = (father.iq + mother.iq) / 2;
         String surname = father.surname;
+        int year = mother.getYear() + 1;
+
+        Human child;
         if (gender.equals("male")) {
             String name = MALE_NAMES[rand.nextInt(MALE_NAMES.length)];
-            return new Man(name, surname, iq, null);
+            child = new Man(name, surname, year, iq, null);  // Pet will be assigned later
         } else {
             String name = FEMALE_NAMES[rand.nextInt(FEMALE_NAMES.length)];
-            return new Woman(name, surname, iq, null);
+            child = new Woman(name, surname, year, iq, null);  // Pet will be assigned later
         }
+
+        if (father.getPet() != null) {
+            child.setPet(father.getPet());
+        } else if (mother.getPet() != null) {
+            child.setPet(mother.getPet());
+        }
+
+        return child;
     }
 
     @Override
     public String toString() {
         return "Family{\n" +
-                " mother=" + mother +
-                ",\n father=" + father +
-                ",\n children=" + Arrays.toString(children) +
-                ",\n pet=" + pet +
-                "\n}";
+                " mother=" + mother + ",\n" +
+                " father=" + father + ",\n" +
+                " children=" + children + ",\n" +
+                " pets=" + (pets.isEmpty() ? "No pets" : pets) + "\n}";
     }
+
 
     @Override
     public boolean equals(Object o) {

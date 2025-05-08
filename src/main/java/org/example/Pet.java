@@ -1,21 +1,20 @@
 package org.example;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class Pet {
     protected Species species;
     protected String nickname;
     private int age;
     private int trickLevel;
-    private String[] habits;
+    private Set<String> habits;
 
     public Pet(Species species, String nickname, int age, int trickLevel, String[] habits) {
         this.species = species;
         this.nickname = nickname;
         this.age = age;
         this.trickLevel = trickLevel;
-        this.habits = habits;
+        this.habits = new HashSet<>(Arrays.asList(habits));
     }
 
     public Pet(Species species, String nickname) {
@@ -73,11 +72,11 @@ public abstract class Pet {
         this.trickLevel = trickLevel;
     }
 
-    public String[] getHabits() {
+    public Set<String> getHabits() {
         return habits;
     }
 
-    public void setHabits(String[] habits) {
+    public void setHabits(Set<String> habits) {
         this.habits = habits;
     }
 
@@ -85,13 +84,12 @@ public abstract class Pet {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Pet pet = (Pet) o;
-        return age == pet.age && trickLevel == pet.trickLevel && Objects.equals(species, pet.species) && Objects.equals(nickname, pet.nickname) && Objects.deepEquals(habits, pet.habits);
+        return age == pet.age && trickLevel == pet.trickLevel && species == pet.species && Objects.equals(nickname, pet.nickname) && Objects.equals(habits, pet.habits);
     }
 
     @Override
     public int hashCode() {
-        int speciesHash = Objects.hash(species.canFly(), species.numberOfLegs(), species.hasFur());
-        return Objects.hash(speciesHash, nickname, age, trickLevel, Arrays.hashCode(habits));
+        return Objects.hash(species, nickname, age, trickLevel, habits);
     }
 
     @Override
@@ -100,8 +98,7 @@ public abstract class Pet {
                 "{nickname='" + nickname + '\'' +
                 ", age=" + age +
                 ", trickLevel=" + trickLevel +
-                ", habits=" + Arrays.toString(habits) +
+                ", habits=" + habits +
                 '}';
     }
-
 }

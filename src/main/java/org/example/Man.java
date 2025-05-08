@@ -1,6 +1,10 @@
 package org.example;
 
 public final class Man extends Human {
+    public Man(String name, String surname, int year, int iq, Pet pet) {
+        super(name, surname, year, iq, pet);
+    }
+
     public Man(String name, String surname, int iq, Pet pet) {
         super(name, surname, iq, pet);
     }

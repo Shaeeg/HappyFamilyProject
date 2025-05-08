@@ -1,7 +1,6 @@
 package org.example;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class Human {
     protected String name;
@@ -9,15 +8,23 @@ public abstract class Human {
     private int year;
     protected int iq;
     protected Pet pet;
-    private String[][] schedule;
+    Map<DaysOfWeek, String> schedule;
     private Family family;
 
-    public Human(String name, String surname, int year, int iq, String[][] schedule) {
+    public Human(String name, String surname, int year, int iq, Map<DaysOfWeek, String> schedule) {
         this.name = name;
         this.surname = surname;
         this.year = year;
         this.iq = iq;
-        this.schedule = schedule;
+        this.schedule = (schedule == null) ? new HashMap<>() : schedule;
+    }
+
+    public Human(String name, String surname, int year, int iq, Pet pet) {
+        this.name = name;
+        this.surname = surname;
+        this.year = year;
+        this.iq = iq;
+        this.pet = pet;
     }
 
     public Human(String name, String surname, int iq, Pet pet) {
@@ -40,26 +47,38 @@ public abstract class Human {
     public abstract void greetPet();
 
     public void describePet() {
-        if (family != null && family.getPet() != null) {
-            Pet pet = family.getPet();
-            String sly = pet.getTrickLevel() > 50 ? "very sly" : "almost not sly";
-            System.out.printf("I have a %s who is %d years old, and he is %s.\n", pet.getSpecies(), pet.getAge(), sly);
+        if (family != null && family.getPets() != null) {
+            for (Pet pet : family.getPets()) {
+                String sly = pet.getTrickLevel() > 50 ? "very sly" : "almost not sly";
+                System.out.printf("I have a %s who is %d years old, and he is %s.\n", pet.getSpecies(), pet.getAge(), sly);
+            }
         }
     }
 
     public boolean feedPet(boolean isTime) {
-        if (family == null || family.getPet() == null) return false;
+        if (family == null || family.getPets() == null) return false;
 
-        Pet pet = family.getPet();
-        int chance = (int) (Math.random() * 100);
-        if (isTime || pet.getTrickLevel() > chance) {
-            System.out.printf("%s feeds the pet.\n", this.name);
-            return true;
-        } else {
-            System.out.printf("I think %s is not hungry.\n", pet.getNickname());
-            return false;
+        for (Pet pet : family.getPets()) {
+            int chance = (int) (Math.random() * 100);
+            if (isTime || pet.getTrickLevel() > chance) {
+                System.out.printf("%s feeds the pet.\n", this.name);
+                return true;
+            } else {
+                System.out.printf("I think %s is not hungry.\n", pet.getNickname());
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public void assignPetToChild(Human child) {
+        if (child.getPet() == null) {
+            if (this.pet != null) {
+                child.setPet(this.pet);
+            }
         }
     }
+
 
 
     public String getName() {
@@ -94,11 +113,19 @@ public abstract class Human {
         this.iq = iq;
     }
 
-    public String[][] getSchedule() {
+    public Pet getPet() {
+        return pet;
+    }
+
+    public void setPet(Pet pet) {
+        this.pet = pet;
+    }
+
+    public Map<DaysOfWeek, String> getSchedule() {
         return schedule;
     }
 
-    public void setSchedule(String[][] schedule) {
+    public void setSchedule(Map<DaysOfWeek, String> schedule) {
         this.schedule = schedule;
     }
 
@@ -117,9 +144,10 @@ public abstract class Human {
                 ", surname='" + surname + '\'' +
                 ", year=" + year +
                 ", iq=" + iq +
-                ", schedule=" + Arrays.deepToString(schedule) +
+                ", pet=" + (pet != null ? pet.getNickname() : "No pet") +
                 '}';
     }
+
 
     @Override
     public boolean equals(Object o) {
